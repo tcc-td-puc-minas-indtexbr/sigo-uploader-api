@@ -1,0 +1,71 @@
+{
+  "version": "2.0",
+  "app_name": "sigo_uploader_api",
+  "tags": {
+    "Sector": "IndTexBr",
+    "Team": "TCC TD SIGO",
+    "App": "Standard Doc Uploader Api"
+  },
+  "lambda_timeout": 120,
+  "memory": 128,
+  "stages": {
+    "production": {
+      "manage_iam_role": false,
+      "iam_role_arn": "arn:aws:iam::${AWS::AccountId}:role/lambda_role",
+      "lambda_functions": {
+        "handle_sqs_message": {
+          "lambda_timeout": 120
+        }
+      },
+      "environment_variables": {
+        "APP_ENV": "production",
+        "DEBUG": "true",
+        "LOG_LEVEL": "info",
+        "API_SERVER": "https://services.hagatus.com.br/sigo-uploader",
+        "API_SERVER_DESCRIPTION": "Production server",
+        "AWS_BUCKET_NAME": "tcc-td-sigo-production"
+      },
+      "tags": {
+        "Env": "production"
+      }
+    },
+    "staging": {
+      "manage_iam_role": false,
+      "iam_role_arn": "arn:aws:iam::${AWS::AccountId}:role/lambda_role",
+      "lambda_functions": {
+        "handle_sqs_message": {
+          "lambda_timeout": 120
+        }
+      },
+      "environment_variables": {
+        "APP_ENV": "staging",
+        "DEBUG": "true",
+        "LOG_LEVEL": "info",
+        "API_SERVER": "https://services.hagatus.com.br/sigo-uploader",
+        "API_SERVER_DESCRIPTION": "Production server",
+        "AWS_BUCKET_NAME": "tcc-td-sigo-production"
+      },
+      "tags": {
+        "Env": "staging"
+      }
+    },
+    "dev": {
+      "manage_iam_role": false,
+      "iam_role_arn": "arn:aws:iam::${AWS::AccountId}:role/lambda_role",
+      "lambda_functions": {
+        "handle_sqs_message": {
+          "lambda_timeout": 120
+        }
+      },
+      "environment_variables": {
+        "APP_ENV": "development",
+        "DEBUG": "true",
+        "LOG_LEVEL": "info",
+        "API_SERVER": "https://services.hagatus.com.br/sigo-uploader",
+        "API_SERVER_DESCRIPTION": "Production server",
+        "AWS_BUCKET_NAME": "tcc-td-sigo-production",
+        "AWS_PROFILE": "sigo-lambdas"
+      }
+    }
+  }
+}

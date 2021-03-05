@@ -1,0 +1,103 @@
+components:
+  schemas:
+    Alive:
+      properties:
+        app:
+          example: I'm alive!
+          type: string
+      type: object
+    Ping:
+      properties:
+        message:
+          example: PONG
+          type: string
+      type: object
+    UploadErrorResponse:
+      properties:
+        message:
+          example: Upload failed
+          type: string
+      type: object
+    UploadResponse:
+      properties:
+        message:
+          example: Upload success
+          type: string
+      type: object
+info:
+  title: sigo-uploader-api
+  version: 1.0.0
+openapi: 3.0.2
+paths:
+  /alive:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alive'
+          description: Success response
+      summary: Service Health Method
+  /ping:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ping'
+          description: Success response
+      summary: Ping method
+  /v1/upload/{file_type}/{file_name}:
+    post:
+      parameters:
+      - description: File type (standard, consulting)
+        example: standard
+        in: path
+        name: file_type
+        required: true
+        schema:
+          enum:
+          - standard
+          - consulting
+          type: string
+      - description: File name
+        example: ISO_9001_2010.pdf
+        in: path
+        name: file_name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/pdf:
+            schema:
+              format: binary
+              type: string
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  format: binary
+                  type: string
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+          description: Success response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadErrorResponse'
+          description: Success response
+      summary: Upload file to S3 Sigo Bucket
+servers:
+- description: Production server
+  url: https://services.hagatus.com.br/sigo-uploader
+- description: Development server
+  url: http://localhost:8000
