@@ -19,7 +19,7 @@ class SigoUploaderService:
     # file name max size
     MAX_SIZE_FILE_NAME = 50
     # files types
-    FILE_TYPES = ['standard']
+    FILE_TYPES = ['standard', 'consulting']
     # 20 MB
     MAX_SIZE = 20480000
 
