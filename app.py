@@ -69,7 +69,7 @@ def alive():
     return http_helper.create_response(body=body, status_code=200)
 
 
-@app.route('/favicon-32x32.png')
+@app.route('/favicon-32x32.png', cors=True)
 def favicon():
     headers = CUSTOM_DEFAULT_HEADERS.copy()
     headers['Content-Type'] = "image/png"
@@ -78,7 +78,7 @@ def favicon():
     return http_helper.create_response(body=data, status_code=200, headers=headers)
 
 
-@app.route('/docs')
+@app.route('/docs', cors=True)
 def docs():
     headers = CUSTOM_DEFAULT_HEADERS.copy()
     headers['Content-Type'] = "text/html"
@@ -87,7 +87,7 @@ def docs():
     return http_helper.create_response(body=html, status_code=200, headers=headers)
 
 
-@app.route('/openapi.json')
+@app.route('/openapi.json', cors=True)
 def docs():
     headers = CUSTOM_DEFAULT_HEADERS.copy()
     headers['Content-Type'] = "text/json"
@@ -96,7 +96,7 @@ def docs():
     return http_helper.create_response(body=html, status_code=200, headers=headers)
 
 
-@app.route('/openapi.yml')
+@app.route('/openapi.yml', cors=True)
 def docs():
     headers = CUSTOM_DEFAULT_HEADERS.copy()
     headers['Content-Type'] = "text/yaml"
@@ -110,7 +110,7 @@ def docs():
 @app.route('/v1/upload/{file_type}/{file_name}', methods=['POST'], content_types=[
     'application/pdf',
     'multipart/form-data'
-])
+], cors=True)
 def upload_to_s3(file_type, file_name):
     """
         post:
