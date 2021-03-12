@@ -1,7 +1,11 @@
 import cgi
 import os
+import codecs
 from io import BytesIO
 from os import path
+# from io import open
+import magic
+
 
 from chalicelib.aws_helper import get_s3_client
 from chalicelib.config import get_config
@@ -57,22 +61,20 @@ class SigoUploaderService:
             if 'multipart/form-data' in str(content_type):
                 property_dict = cgi.parse_header(content_type)[1]
                 # convert to bytes
-                property_dict['boundary'] = property_dict['boundary'].encode()
+                property_dict['boundary'] = property_dict['boundary'].encode('utf-8')
                 form_data = cgi.parse_multipart(BytesIO(body), property_dict)
                 if 'file' in form_data and len(form_data['file']) > 0:
                     body = form_data['file'][0]
                 else:
-                    body = ''
+                    body = b''
+
 
             # validate file size
             if len(body) > self.MAX_SIZE:
                 raise MaxSizeException('File size great than limit %s' % (self.MAX_SIZE,))
 
-            # TODO não pode escrever um arquivo temporário
-            temp_file = path.join('/tmp', file_name)
-            self.logger.info('temp_file: {}'.format(file_name))
-            with open(temp_file, 'wb') as f:
-                f.write(body)
+
+            temp_file = self.create_file_bytes(body, file_name)
 
             if bucket == '':
                 raise Exception('Bucket name empty')
@@ -83,13 +85,9 @@ class SigoUploaderService:
             if len(file_name) > self.MAX_SIZE_FILE_NAME:
                 file_name = file_name[:self.MAX_SIZE_FILE_NAME] + '.' + ext
             bucket_file_name = path.join(file_type, file_name)
-            bucket_file_txt_name = path.join(file_type, file_name + '.txt')
 
             self.logger.info('Uploading to S3 %s %s %s' % (temp_file, bucket, bucket_file_name))
             self.s3_client.upload_file(temp_file, bucket, bucket_file_name)
-            # Copy as txt to see the diference between local upload and online
-            self.logger.info('Uploading to S3 %s %s %s' % (temp_file, bucket, bucket_file_txt_name))
-            self.s3_client.upload_file(temp_file, bucket, bucket_file_txt_name)
 
             result = True
         except Exception as err:
@@ -101,3 +99,29 @@ class SigoUploaderService:
             result = False
 
         return result
+
+    def create_file_bytes(self, body, file_name):
+        temp_file = path.join('/tmp', file_name)
+        self.logger.info('temp_file: {}'.format(file_name))
+        with open(temp_file, 'wb') as f:
+            f.write(body)
+            f.close()
+
+        return temp_file
+
+    # def create_file(self, body, file_name):
+    #     temp_file = path.join('/tmp', file_name + 'B')
+    #     self.logger.info('temp_file: {}'.format(file_name))
+    #     with open(temp_file, 'w') as f:
+    #         try:
+    #             decoded = body.decode('utf-8')
+    #         except Exception as e:
+    #             self.logger.error(e)
+    #             try:
+    #                 decoded = body.decode('ascii')
+    #             except Exception as e:
+    #                 self.logger.error(e)
+    #                 decoded = body.decode('iso-8859-1')
+    #         f.write(decoded)
+    #         f.close()
+    #     return temp_file

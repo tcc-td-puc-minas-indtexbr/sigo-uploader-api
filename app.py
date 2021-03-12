@@ -23,6 +23,11 @@ debug = helper.debug_mode()
 logger = get_logger()
 # chalice app
 app = Chalice(app_name=APP_NAME, debug=debug)
+
+# https://github.com/aws/chalice/issues/796
+# Binary type support
+app.api.binary_types.append('multipart/form-data')
+
 # override the log configs
 if not debug:
     # override to the level desired
