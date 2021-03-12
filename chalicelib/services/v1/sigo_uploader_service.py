@@ -1,10 +1,7 @@
 import cgi
 import os
-import codecs
 from io import BytesIO
 from os import path
-# from io import open
-import magic
 
 
 from chalicelib.aws_helper import get_s3_client
